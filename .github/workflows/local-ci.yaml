@@ -1,0 +1,50 @@
+name: Fast Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Cargo check & fmt & clippy
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin
+            target
+          key: ${{ runner.os }}-fast-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-fast-
+
+      - name: Build, Test
+        run: |
+          cargo build -p reth-provider --locked
+          
+      - name: Format and commit
+        run: |	
+          rustfmt --edition 2024 crates/storage/provider/src/providers/rocksdb/provider.rs
+          git config user.email "actions@github.com"
+          git config user.name "Github Actions"
+          git add .
+          git commit -m "CI: comming formatting changes [skip ci]" || echo "Nothing to commit"
+          git push || echo "Push failed"
