@@ -4064,7 +4064,7 @@ mod tests {
             .unwrap_or(0);
 
         let mut batch = provider.batch();
-        let targets_account= vec![((address,  500)];
+        let targets_account= vec![(address,  500)];
         batch.prune_account_history_batch(&targets_account).unwrap();
 
 
