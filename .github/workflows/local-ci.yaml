@@ -1,8 +1,10 @@
-name: Fast Check1
+name: Fast Check
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+      - feat/next_thing
   pull_request:
   workflow_dispatch:
 
