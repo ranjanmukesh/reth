@@ -27,6 +27,11 @@ jobs:
         with:
           components: rustfmt, clippy
 
+      - name: Install cargo nextest
+        run: cargo install --locked cargo-nextest
+
+
+
       - name: Cache Cargo
         uses: actions/cache@v4
         with:
@@ -50,3 +55,6 @@ jobs:
 #          git add .
 #          git commit -m "CI: comming formatting changes [skip ci]" || echo "Nothing to commit"
 #          git push || echo "Push failed"
+#
+      - name: Run unit test for the crate prune
+        run: cargo nextest run --workspace
